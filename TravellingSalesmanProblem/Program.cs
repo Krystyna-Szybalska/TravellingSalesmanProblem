@@ -1,22 +1,10 @@
 using System;
+using System.Collections.Generic;
 
 namespace TravellingSalesmanProblem
 {
     class Program
     {
-        //komiwojażer musi odwiedzić wszystkie miasta dokładnie raz
-        //wybór najtańszej ścieżki
-        //rozwiazanie optymalne jest czasowo nierealistyczne
-        //szukamy rozwiazań suboptymalnych
-        //algorytm ewolucyjny - tworzymy osobnika rodzica, w oparciu o niego modyfikujemy dziecko, które staje się rodzicem jeśli jest lepsze od rodzica
-        //RODZIC: jednowymiarowa tablica mająca N (liczba miast) komórek, w komórce liczby od 1-100 (w której kolejności dane miasto zostanie odwiedzone)
-        //DZIECKO poddajemy inwersji: losujemy dwie liczby z zakresu 1 do 100, podmieniamy te liczby w danych miastach
-        //jeśli koszt podróży jest mniejszy, dziecko staje się rodzicem dla kolejnego pokolenia, jeśli nie dziecko xx
-        // założenie: czas, liczba pokoleń albo zrobić licznik zliczająćy nieudane próby udanego dziecka
-        // np. jeśli po 10000 prób nie udalo się uzyskać niczego lepszego niż obecne dziecko koniec
-        // N = 100. wypełnione liczbami losowymi, ni emusi być symetryczne, koszt 5-50, dodatni, naturalny
-        // output: kolejność miast, najtańsza scieżka
-
         static void Main(string[] args)
         {
             int[,] matrix = CreateMatrix(100);
@@ -27,9 +15,10 @@ namespace TravellingSalesmanProblem
                 parent[i] = i;
             }
 
-            int youAreAFAILURECounter = 0;
+            int failureCounter = 0;
             int parentCost=0;
-            while (youAreAFAILURECounter<100)
+            List<int> costInTime = new List<int>();
+            while (failureCounter<100)
             {
                 parentCost = CountCost(matrix, parent);
                 int[] child = CreateChild(parent);
@@ -38,18 +27,33 @@ namespace TravellingSalesmanProblem
                 {
                     parent = child;
                     parentCost = childCost;
-                    youAreAFAILURECounter = 0;
+                    failureCounter = 0;
                 }
-                else youAreAFAILURECounter++;
+                else failureCounter++;
+                costInTime.Add(parentCost);
             }
 
             Console.WriteLine("Optymalna ścieżka to ");
             foreach (var item in parent)
             {
-                Console.Write(item+" -> ");
+                Console.Write(item+" - ");
             }
             Console.WriteLine($"Koszt tej ścieżki to {parentCost}");
+            
+            Console.WriteLine();
+            Console.WriteLine("Zmiany kosztu z iteracji na iterację (w nawiasie liczba powtórzeń danej wartości): ");
+            
+            int howManyTimes = 0;
+            for (int i = 0; i < costInTime.Count; i++)
+            {
+                if (i<costInTime.Count-1 && (costInTime[i] == costInTime[i + 1])) howManyTimes++;
+                else{
+                    Console.Write($"{costInTime[i]} ({howManyTimes}) >> ");
+                    howManyTimes = 0;
+                }
+                if (i == costInTime.Count-1) Console.Write($"{costInTime[i]}");
 
+            }
         }
 
         private static void printTable(int[] arr)
