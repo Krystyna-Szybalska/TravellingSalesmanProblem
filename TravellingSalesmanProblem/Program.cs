@@ -18,7 +18,7 @@ namespace TravellingSalesmanProblem
             int failureCounter = 0;
             int parentCost=0;
             List<int> costInTime = new List<int>();
-            while (failureCounter<100)
+            while (failureCounter<1000)
             {
                 parentCost = CountCost(matrix, parent);
                 int[] child = CreateChild(parent);
@@ -33,7 +33,7 @@ namespace TravellingSalesmanProblem
                 costInTime.Add(parentCost);
             }
 
-            Console.WriteLine("Optymalna ścieżka to ");
+            Console.WriteLine("(Sub)optymalna ścieżka to: ");
             foreach (var item in parent)
             {
                 Console.Write(item+" - ");
@@ -48,8 +48,11 @@ namespace TravellingSalesmanProblem
             {
                 if (i<costInTime.Count-1 && (costInTime[i] == costInTime[i + 1])) howManyTimes++;
                 else{
-                    Console.Write($"{costInTime[i]} ({howManyTimes}) >> ");
-                    howManyTimes = 0;
+                    if (howManyTimes==0) Console.Write($"{costInTime[i]} >> ");
+                    else{
+                        Console.Write($"{costInTime[i]} ({howManyTimes}) >> ");
+                        howManyTimes = 0;
+                    }
                 }
                 if (i == costInTime.Count-1) Console.Write($"{costInTime[i]}");
 
